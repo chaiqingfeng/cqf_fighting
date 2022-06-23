@@ -32,16 +32,18 @@ class Solution:
         1.  1 阶 + 1 阶
         2.  2 阶
         '''
-        # 动态规划：看别人的自己写的，其实知道逻辑也就是转移方程（先考虑最后一步，可能是迈1步或者2步（在转移矩阵dp中其实对应的就是n-1位置和n-2位置），那么dp[n]=dp[n-1]+dp[n-2]，
+        # 动态规划
+        # 方法：看别人的自己写的，其实知道逻辑也就是转移方程（先考虑最后一步，可能是迈1步或者2步（在转移矩阵dp中其实对应的就是n-1位置和n-2位置），那么dp[n]=dp[n-1]+dp[n-2]，
         # 不过忘了动态规划都一般用到转移方程和转移矩阵，这个矩阵是一个一维数组，i上记录爬到第i个台阶的方法数）
-        dp=[0]*n
-        dp[0]=1
-        if n>1: 
-            dp[1]=2
-            for i in range(2,n):
-                dp[i]=dp[i-1]+dp[i-2]
-        return dp[-1]
-        # （参考官方解题）其实最后值需要倒数第三、倒数第二级台阶来计算倒数第一个的，所以用两个数移动记录dp[i-1]和dp[i-2]
+        # dp=[0]*n
+        # dp[0]=1
+        # if n>1: 
+        #     dp[1]=2
+        #     for i in range(2,n):
+        #         dp[i]=dp[i-1]+dp[i-2]
+        # return dp[-1]
+        
+        # 方法2：（参考官方解题）其实最后值需要倒数第三、倒数第二级台阶来计算倒数第一个的，所以用两个数移动记录dp[i-1]和dp[i-2]
         r=1
         p=0
         q=0
@@ -50,6 +52,25 @@ class Solution:
             q=r
             r=p+q
         return r
+    def waysToStep(self, n: int) -> int:
+        '''
+        三步问题。有个小孩正在上楼梯，楼梯有n阶台阶，小孩一次可以上1阶、2阶或3阶。实现一种方法，计算小孩有多少种上楼梯的方式。结果可能很大，你需要对结果模1000000007。
+        '''
+        # 自己写的，跟“爬楼梯”问题一模一样
+        if n<1:
+            return 0
+        elif n==1:
+            return 1
+        elif n==2:
+            return 2
+        elif n>2:
+            dp=[0]*n
+            dp[0]=1
+            dp[1]=2
+            dp[2]=4
+            for i in range(3, n):
+                dp[i]=dp[i-1]+dp[i-2]+dp[i-3]
+            return dp[-1]% 1000000007
     def longestPalindrome(self, s: str) -> str:
         '''
         5给你一个字符串 s，找到 s 中最长的回文子串。
@@ -85,6 +106,31 @@ class Solution:
                         s_r=s[start:end]
                         max_len=L
             return s_r
+    
+    def wordBreak(self, s: str, wordDict: List[str]) -> bool:
+        '''
+        139、单词拆分
+        给你一个字符串 s 和一个字符串列表 wordDict 作为字典。请你判断是否可以利用字典中出现的单词拼接出 s 。
+        注意：不要求字典中出现的单词全部都使用，并且字典中的单词可以重复使用。
+        
+        输入: s = "applepenapple", wordDict = ["apple", "pen"]
+        输出: true
+        解释: 返回 true 因为 "applepenapple" 可以由 "apple" "pen" "apple" 拼接成。
+        注意，你可以重复使用字典中的单词。
+        '''
+        # 看官方解题自己写的：动态规划
+        # f[i] 表示字符串 s 前 i 个字符组成的字符串 s[0..i-1] 是否能被空格拆分成若干个字典中出现的单词，
+        # s 的前 i 个字符是否能够由 wordDict 拼接而成，取决于 f[j] 以及 s[j:i]，因此转移方程为 f[i]=f[j] and s[j:i] in wordDict
+        # 注意前len(s) + 1个字符才是指的整个s
+        f=[False] * (len(s)+1)
+        f[0]=True # 前0个字符指空字符，故f[0]为True
+        for i in range(1, len(s)+1):
+            for j in range(i):
+                if f[j] and s[j:i] in wordDict:
+                    f[i]=True
+                    break # 只要在0~i之间有一个 j 满足拆分，就可以停止对 j 的循环
+        print(f)
+        return f[-1]
     def uniquePaths(self, m: int, n: int) -> int:
         '''
         62 不同路径
@@ -228,3 +274,45 @@ class Solution:
                         left_down+=1
                     dp[i][j]=min(left, down, left_down)
             return dp[n][m]
+
+class my:
+    def __init__(self, name):
+        self.name=name
+    @classmethod
+    def my_print(cls, name):
+        cls.content=name
+        print(cls.content)
+
+    
+
+if __name__ == "__main__":
+    import time
+    time_start=time.perf_counter()
+    p=Solution()
+    r=p.waysToStep(61)
+    print(r)
+    time.sleep(5)
+    time_end=time.perf_counter()
+    print(time_end-time_start)
+
+    # import requests
+    # from urllib import request, parse
+    # from selenium import webdriver
+    # from bs4 import BeautifulSoup
+    # url='https://book.douban.com/'
+    # headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3880.400 QQBrowser/10.8.4554.400 '}
+
+    # import warnings
+    # warnings.simplefilter('ignore',ResourceWarning)
+    # chome_options = webdriver.ChromeOptions()
+    # chome_options.add_argument('--headless') # 无头浏览器模式
+    # chome_options.add_argument('--disable-gpu')
+    # driver=webdriver.Chrome(chrome_options=chome_options)
+    # driver.get(url)
+    # content=driver.page_source
+    # # request=requests.get(url, headers=headers)
+    # # request.encoding = 'utf-8'
+    # # content=request.text
+    # soup=BeautifulSoup(content, 'html.parser')
+    # res=soup.find_all('p')
+    # print(res[0].text)
